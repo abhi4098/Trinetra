@@ -1,0 +1,43 @@
+- name: feature
+  color: "1D76DB"
+  description: New functionality or capability
+
+- name: bug
+  color: "D73A4A"
+  description: Defect or incorrect behavior
+
+- name: tech-debt
+  color: "FBCA04"
+  description: Maintainability or architecture improvement
+
+- name: documentation
+  color: "0075CA"
+  description: Documentation updates
+
+- name: milestone-1
+  color: "BFD4F2"
+  description: Work related to Milestone 1
+
+- name: milestone-2
+  color: "8FB5FF"
+  description: Work related to Milestone 2
+
+- name: milestone-3
+  color: "5F96FF"
+  description: Work related to Milestone 3
+
+- name: agent
+  color: "6F42C1"
+  description: Agent architecture and orchestration
+
+- name: memory
+  color: "0E8A16"
+  description: Memory retrieval and memory system work
+
+- name: voice
+  color: "C5DEF5"
+  description: Voice interface and speech pipeline work
+
+- name: automation
+  color: "5319E7"
+  description: Tool calling and browser automation work

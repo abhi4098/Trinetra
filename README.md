@@ -1,36 +1,99 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Trinetra
 
-## Getting Started
+Trinetra is a Personal AI Operating System.
 
-First, run the development server:
+Today, Trinetra provides structured workflows for projects, tasks, and memories. Over time, it will evolve into a chat-first personal operator with agent orchestration, voice input, tool calling, and browser automation.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## Project Overview
+
+Trinetra combines:
+
+- A modern App Router web interface
+- A feature-based codebase organization
+- A deterministic agent layer (no LLM dependency yet)
+- A persistent memory model powered by Supabase
+- Testable planning and recommendation services
+
+## Vision
+
+Build a long-term AI companion that can understand context, prioritize actions, and execute real-world workflows on behalf of the user.
+
+See:
+
+- [docs/vision.md](docs/vision.md)
+- [docs/roadmap.md](docs/roadmap.md)
+- [docs/architecture.md](docs/architecture.md)
+- [docs/decisions.md](docs/decisions.md)
+
+## Core Principles
+
+- AI-first product direction with pragmatic milestones
+- Chat as the primary future interface
+- Clear architecture boundaries (UI, features, agent, memory, tools)
+- Strong TypeScript typing and schema validation
+- Testability by design (planner/memory/services)
+- Production-oriented incremental delivery
+
+## Current Architecture
+
+- Frontend: Next.js App Router + Tailwind CSS + TypeScript
+- Data: Supabase
+- State/data fetching: React Query (client interactions)
+- Validation: Zod
+- Testing: Vitest (unit tests for agent logic)
+
+High-level flow:
+
+Chat -> Agent -> Memory -> Tools
+
+## Development Setup
+
+### Requirements
+
+- Node.js 20+
+- npm 10+
+- Supabase project with configured environment variables
+
+### Environment Variables
+
+Create `.env.local`:
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=YOUR_URL
+NEXT_PUBLIC_SUPABASE_ANON_KEY=YOUR_KEY
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Install and Run
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm install
+npm run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Quality Checks
 
-## Learn More
+```bash
+npm run lint
+npm run test
+npm run build
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Roadmap
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- Milestone 1: CRUD foundation, dashboard, navigation
+- Milestone 2: Chat, agent layer, memory retrieval, Vitest tests
+- Milestone 3: OpenAI integration, voice foundation
+- Milestone 4: Tool calling, browser automation
+- Milestone 5: Autonomous personal operator
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Detailed plan: [docs/roadmap.md](docs/roadmap.md)
 
-## Deploy on Vercel
+## Milestones
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- M1 complete: foundational CRUD product surface
+- M2 in progress: chat-first and agent-centric evolution
+- M3+ planned: intelligence depth and execution capabilities
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution workflow and standards.
