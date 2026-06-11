@@ -1,4 +1,8 @@
 import { loadAgentContext } from "@/features/agent/memory/retrieval";
+import {
+  filterMemoriesByType,
+  synthesizeMemories,
+} from "@/features/agent/memory/memory-service";
 import { getTaskRecommendation } from "@/features/agent/planner/recommendation-engine";
 import { routeIntent, type ChatIntent } from "@/features/agent/orchestrator/intent-router";
 import { getHighPriorityTasks, getUnfinishedTasks } from "@/features/agent/tools/task-tools";
@@ -80,11 +84,12 @@ function buildMemoriesReply(memories: Memory[]) {
     return "You do not have any memories stored yet.";
   }
 
-  return `You have ${memories.length} memory item(s): ${formatMemoryList(memories)}`;
+  const synthesis = synthesizeMemories(memories);
+  return `You have ${synthesis.total} memory item(s): ${synthesis.summary}`;
 }
 
 function buildDecisionsReply(memories: Memory[]) {
-  const decisions = memories.filter((memory) => memory.memory_type === "decision");
+  const decisions = filterMemoriesByType(memories, "decision");
 
   if (decisions.length === 0) {
     return "No decision memories found yet.";
@@ -94,7 +99,7 @@ function buildDecisionsReply(memories: Memory[]) {
 }
 
 function buildInsightsReply(memories: Memory[]) {
-  const insights = memories.filter((memory) => memory.memory_type === "insight");
+  const insights = filterMemoriesByType(memories, "insight");
 
   if (insights.length === 0) {
     return "No insight memories found yet.";
@@ -104,7 +109,7 @@ function buildInsightsReply(memories: Memory[]) {
 }
 
 function buildNotesReply(memories: Memory[]) {
-  const notes = memories.filter((memory) => memory.memory_type === "note");
+  const notes = filterMemoriesByType(memories, "note");
 
   if (notes.length === 0) {
     return "No note memories found yet.";
@@ -128,15 +133,22 @@ function buildAboutReply(context: AgentContext) {
     return "No memory has been stored yet.";
   }
 
-  const latestMemory = [...context.memories].sort(
-    (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-  )[0];
+  const synthesis = synthesizeMemories(context.memories);
 
-  return `Trinetra is a Personal AI Operating System. I have ${context.memories.length} stored memory item(s). Latest memory: ${summarizeMemory(latestMemory)}`;
+  return [
+    "Trinetra is a Personal AI Operating System.",
+    "Known information:",
+    synthesis.summary,
+    `Stored memories: ${synthesis.total}.`,
+  ].join("\n");
 }
 
 function buildRecommendationReply(recommendation: ChatResponse["recommendation"]) {
   return `Recommended next step: ${recommendation.title}. Estimated effort: ${recommendation.estimate}. ${recommendation.reason}`;
+}
+
+function buildUnknownReply() {
+  return "I am not sure how to answer that yet.\nTry asking about projects, tasks, memories, decisions, insights or recommendations.";
 }
 
 function buildReply(message: string, context: AgentContext, recommendation: ChatResponse["recommendation"]) {
@@ -160,9 +172,11 @@ function buildReply(message: string, context: AgentContext, recommendation: Chat
     case "about_trinetra":
       return buildAboutReply(context);
     case "recommendation":
-    case "unknown":
-    default:
       return buildRecommendationReply(recommendation);
+    case "unknown":
+      return buildUnknownReply();
+    default:
+      return buildUnknownReply();
   }
 }
 

@@ -10,6 +10,18 @@ export type ChatIntent =
   | "about_trinetra"
   | "unknown";
 
+export const ACTIVE_INTENTS: Exclude<ChatIntent, "unknown">[] = [
+  "projects",
+  "tasks",
+  "memories",
+  "decisions",
+  "insights",
+  "notes",
+  "workspace_summary",
+  "recommendation",
+  "about_trinetra",
+];
+
 export type IntentRule = {
   intent: Exclude<ChatIntent, "unknown">;
   keywords: string[];

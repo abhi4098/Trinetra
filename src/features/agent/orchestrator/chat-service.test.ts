@@ -42,7 +42,8 @@ describe("chatWithTrinetra", () => {
     const response = await chatWithTrinetra("What is Trinetra?", { loadContext });
     expect(response.intent).toBe("about_trinetra");
     expect(response.reply).toContain("Personal AI Operating System");
-    expect(response.reply).toContain("stored memory item");
+    expect(response.reply).toContain("Known information:");
+    expect(response.reply).toContain("Stored memories:");
   });
 
   it("returns memories intent response without recommendation fallback", async () => {
@@ -70,5 +71,13 @@ describe("chatWithTrinetra", () => {
 
     expect(response.intent).toBe("insights");
     expect(response.reply).toBe("No insight memories found yet.");
+  });
+
+  it("returns explicit unknown-intent guidance instead of recommendation", async () => {
+    const response = await chatWithTrinetra("Tell me a random joke", { loadContext });
+
+    expect(response.intent).toBe("unknown");
+    expect(response.reply).toContain("I am not sure how to answer that yet.");
+    expect(response.reply).not.toContain("Recommended next step");
   });
 });
