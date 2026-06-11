@@ -1,9 +1,22 @@
 import { z } from "zod";
 
 const trimmedString = z.string().trim();
+const noProjectSentinelValues = new Set(["", "null", "NULL"]);
+
+const projectIdSchema = z.preprocess((value) => {
+  if (typeof value === "string") {
+    const normalizedValue = value.trim();
+    if (noProjectSentinelValues.has(normalizedValue)) {
+      return null;
+    }
+    return normalizedValue;
+  }
+
+  return value;
+}, z.union([z.string().uuid("Invalid project id"), z.null()]));
 
 export const memorySchema = z.object({
-  project_id: trimmedString.min(1, "Project ID is required"),
+  project_id: projectIdSchema,
   memory_type: z.enum(["note", "decision", "insight", "meeting"]),
   content: trimmedString
     .min(1, "Content is required")

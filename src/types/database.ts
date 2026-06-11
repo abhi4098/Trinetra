@@ -46,7 +46,7 @@ export type TaskUpdate = Partial<TaskInsert>;
 
 export type Memory = {
   id: string;
-  project_id: string;
+  project_id: string | null;
   memory_type: MemoryType;
   content: string;
   importance: number;
@@ -54,7 +54,7 @@ export type Memory = {
 };
 
 export type MemoryInsert = {
-  project_id: string;
+  project_id: string | null;
   memory_type: MemoryType;
   content: string;
   importance?: number;

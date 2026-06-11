@@ -3,32 +3,35 @@
 import { useMemo, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import type { Memory, MemoryType } from "@/types/database";
+import type { Memory, MemoryType, MemoryUpdate, Project } from "@/types/database";
 import { createMemory, deleteMemory, updateMemory } from "@/features/memories/api";
 import { memoryFilterSchema, memorySchema } from "@/features/memories/schema";
 import FormError from "@/components/ui/form-error";
 
 type Props = {
   memories: Memory[];
+  projects: Project[];
 };
 
 const memoryTypes: MemoryType[] = ["note", "decision", "insight", "meeting"];
 
 type MemoryDraft = {
-  project_id: string;
+  project_id: string | null;
   memory_type: MemoryType;
   content: string;
   importance: number;
 };
 
 const defaultDraft: MemoryDraft = {
-  project_id: "",
+  project_id: null,
   memory_type: "note",
   content: "",
   importance: 5,
 };
 
-export default function MemoriesManager({ memories }: Props) {
+const NO_PROJECT_VALUE = "__no_project__";
+
+export default function MemoriesManager({ memories, projects }: Props) {
   const router = useRouter();
   const [createDraft, setCreateDraft] = useState<MemoryDraft>(defaultDraft);
   const [editId, setEditId] = useState<string | null>(null);
@@ -47,7 +50,7 @@ export default function MemoriesManager({ memories }: Props) {
   });
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, input }: { id: string; input: Partial<MemoryDraft> }) =>
+    mutationFn: ({ id, input }: { id: string; input: MemoryUpdate }) =>
       updateMemory(id, input),
     onSuccess: () => {
       setEditId(null);
@@ -115,12 +118,23 @@ export default function MemoriesManager({ memories }: Props) {
       <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
         <h3 className="text-lg font-semibold text-slate-900">Create Memory</h3>
         <div className="mt-4 grid gap-3 md:grid-cols-2">
-          <input
-            value={createDraft.project_id}
-            onChange={(e) => setCreateDraft((s) => ({ ...s, project_id: e.target.value }))}
+          <select
+            value={createDraft.project_id ?? NO_PROJECT_VALUE}
+            onChange={(e) =>
+              setCreateDraft((s) => ({
+                ...s,
+                project_id: e.target.value === NO_PROJECT_VALUE ? null : e.target.value,
+              }))
+            }
             className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
-            placeholder="Project ID"
-          />
+          >
+            <option value={NO_PROJECT_VALUE}>No Project</option>
+            {projects.map((project) => (
+              <option key={project.id} value={project.id}>
+                {project.name}
+              </option>
+            ))}
+          </select>
           <select
             value={createDraft.memory_type}
             onChange={(e) =>
@@ -191,11 +205,23 @@ export default function MemoriesManager({ memories }: Props) {
             <article key={memory.id} className="rounded-xl border border-slate-200 p-4">
               {editId === memory.id ? (
                 <div className="grid gap-3 md:grid-cols-2">
-                  <input
-                    value={editDraft.project_id}
-                    onChange={(e) => setEditDraft((s) => ({ ...s, project_id: e.target.value }))}
+                  <select
+                    value={editDraft.project_id ?? NO_PROJECT_VALUE}
+                    onChange={(e) =>
+                      setEditDraft((s) => ({
+                        ...s,
+                        project_id: e.target.value === NO_PROJECT_VALUE ? null : e.target.value,
+                      }))
+                    }
                     className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
-                  />
+                  >
+                    <option value={NO_PROJECT_VALUE}>No Project</option>
+                    {projects.map((project) => (
+                      <option key={project.id} value={project.id}>
+                        {project.name}
+                      </option>
+                    ))}
+                  </select>
                   <select
                     value={editDraft.memory_type}
                     onChange={(e) =>
@@ -256,7 +282,9 @@ export default function MemoriesManager({ memories }: Props) {
                     <p className="text-sm text-slate-600">Importance: {memory.importance}</p>
                   </div>
                   <p className="mt-2 text-sm text-slate-800">{memory.content}</p>
-                  <p className="mt-1 text-xs text-slate-500">Project: {memory.project_id}</p>
+                  <p className="mt-1 text-xs text-slate-500">
+                    Project: {memory.project_id ?? "No Project"}
+                  </p>
                   <div className="mt-3 flex gap-2">
                     <button
                       type="button"
